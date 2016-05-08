@@ -1,0 +1,12 @@
+
+DerivedData/*
+
+LunarLockout.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+
+*.xcuserstate
+
+*.xcbkptlist
+
+*.xcscheme
+
+LunarLockout.xcodeproj/xcuserdata/gilberto.medeiros.xcuserdatad/xcschemes/xcschememanagement.plist
