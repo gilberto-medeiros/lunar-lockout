@@ -9,8 +9,11 @@
 #include "Piece.h"
 #include "Grid.h"
 #include "GridPos.h"
+#include "IdCache.h"
+#include "GridFactory.h"
+#include <iostream>
 
-Piece::Piece(bool isSpecial) : _isSpecial(isSpecial){
+Piece::Piece(bool isSpecial, int idBase) : _isSpecial(isSpecial), _idBase(idBase){
     
 }
 
@@ -20,6 +23,7 @@ bool Piece::isSpecial() const {
 
 bool moveInDirection(GridPos &pos, const GridPos &direction) {
     pos = pos + direction;
+    Analytics::reportEvent("move Calculation");
     
     return pos.x >=0 && pos.x < GRID_X && pos.y >=0 && pos.y < GRID_X;
 }
@@ -36,10 +40,20 @@ Grid* Piece::move(Direction dir, const Grid* inGrid) {
             if (!movePossible) {
                 return NULL;
             }
-            // ugly
+            
             Grid *newGrid = new Grid(*inGrid);
             newGrid->swapPieceToPos(this, oldPos);
-            return newGrid;
+            
+            if (IdCache::reserveId(newGrid->calculateId())) {
+                Analytics::reportEvent("Grid pushed");
+                return newGrid;
+            }
+            else {
+                Analytics::reportEvent("Grid dropped (cached)");
+                // this grid was already explored in the past
+                delete newGrid;
+                return NULL;
+            }
         }
         // many coppies here
         oldPos = piecePos;

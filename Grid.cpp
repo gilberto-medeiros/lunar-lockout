@@ -9,34 +9,57 @@
 #include "Grid.h"
 #include <stdlib.h>
 #include <iostream>
+#include <math.h>
+#include "IdCache.h"
+
+void Grid::setPieceToPos(Piece* piece, const GridPos &pos) {
+    _grid[pos.x][pos.y] = piece;
+    _piecePositions[piece] = pos;
+}
 
 Grid::Grid(const std::list<Piece*> &pieces) : _pieces(pieces){
     memset(_grid, NULL, sizeof(GridDataType));
-    
-    GridPos pos;
-    /*for (auto piece : _pieces) {
-        do {
-            pos.x = rand() % GRID_X;
-            pos.y = rand() % GRID_Y;
-        } while(pieceInPos(pos) != NULL);
-        _grid[pos.x][pos.y] = piece;
-        _piecePositions[piece] = pos;
-    }*/
-    
-    // 4,1 0,0 0,4 1,3 3,2
-
-    GridPos fixedPositions[5];
-    fixedPositions[0].set(4,1);
-    fixedPositions[1].set(0,4);
-    fixedPositions[2].set(0,0);
-    fixedPositions[3].set(1,3);
-    fixedPositions[4].set(3,2);
-    
-    int i=0;
-    for (auto piece : _pieces) {
-        _grid[fixedPositions[i].x][fixedPositions[i].y] = piece;
-        _piecePositions[piece] = fixedPositions[i++];
+    /*
+    bool useRandom = true;
+    if(useRandom) {
+        while (true) {
+            GridPos pos;
+            memset(_grid, NULL, sizeof(GridDataType));
+            _piecePositions.clear();
+            for (auto piece : _pieces) {
+                do {
+                    pos.x = rand() % GRID_X;
+                    pos.y = rand() % GRID_Y;
+                } while(pieceInPos(pos) != NULL);
+                
+                setPieceToPos(piece, pos);
+            }
+            if (IdCache::reserveId(calculateId())) {
+                print();
+                break;
+            }
+            else {
+                Analytics::reportEvent("Grid Randomized");
+            }
+        }
+        
     }
+    else {
+        // 4,1 0,0 0,4 1,3 3,2
+        
+        GridPos fixedPositions[5];
+        fixedPositions[0].set(4,1);
+        fixedPositions[1].set(0,4);
+        fixedPositions[2].set(0,0);
+        fixedPositions[3].set(1,3);
+        fixedPositions[4].set(3,2);
+        
+        int i=0;
+        for (auto piece : _pieces) {
+            setPieceToPos(piece, fixedPositions[i++]);
+        }
+    }
+     */
 }
 
 Grid::Grid(const Grid &copyFrom) : _pieces(copyFrom._pieces), _piecePositions(copyFrom._piecePositions) {
@@ -56,6 +79,7 @@ std::list<Grid*> Grid::computeAllMoves() const {
             Grid *newGrid = piece->move(dir, this);
             if (newGrid != NULL) {
                 ret.push_back(newGrid);
+                Analytics::reportEvent("Move explored");
             }
         }
     }
@@ -77,8 +101,7 @@ Piece* Grid::pieceInPos(GridPos &pos) const {
 void Grid::swapPieceToPos(Piece* piece, const GridPos &newPos) {
     GridPos startPos = positionOfPiece(piece);
     _grid[startPos.x][startPos.y] = NULL;
-    _grid[newPos.x][newPos.y] = piece;
-    _piecePositions[piece] = newPos;
+    setPieceToPos(piece, newPos);
 }
 
 void Grid::print() const {
@@ -100,4 +123,35 @@ void Grid::print() const {
 
 bool Grid::isSolution() {
     return _grid[2][2] != NULL && _grid[2][2]->isSpecial();
+}
+
+int Grid::calculateId() {
+    int id=0;
+    for (auto piece : _pieces) {
+        GridPos pos = positionOfPiece(piece);
+        id += (pos.x*GRID_Y+pos.y)*pow(GRID_X*GRID_Y, piece->getIdBase());
+    }
+    return id;
+}
+
+Grid* Grid::createGridFromId(int potencialId, const std::list<Piece*> pieces) {
+    Grid *grid = new Grid(pieces);
+    
+    int id = potencialId;
+    for (auto piece : pieces) {
+        int localId = id % (GRID_X*GRID_Y);
+        GridPos localPos(localId / GRID_X, localId%GRID_Y);
+        //if (localPos.x < 0 || localPos.y < 0 || localPos.x >= GRID_X || localPos.y >= GRID_Y) {
+            
+        //}
+        if (grid->pieceInPos(localPos) != NULL) {
+            Analytics::reportEvent("grid index invalid");
+            delete grid;
+            return NULL;
+        }
+        grid->setPieceToPos(piece, localPos);
+        id = id / (GRID_X*GRID_Y);
+    }
+    
+    return grid;
 }

@@ -11,6 +11,9 @@
 		04AA38981CDCE7A300786810 /* Grid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA38961CDCE7A300786810 /* Grid.cpp */; };
 		04AA389B1CDCE7E700786810 /* Piece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA38991CDCE7E700786810 /* Piece.cpp */; };
 		04AA389F1CDCEC3300786810 /* GridPos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA389D1CDCEC3300786810 /* GridPos.cpp */; };
+		04AA38A21CE088DE00786810 /* IdCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA38A01CE088DE00786810 /* IdCache.cpp */; };
+		04AA38A51CE0925500786810 /* GridFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA38A31CE0925500786810 /* GridFactory.cpp */; };
+		04AA38A81CE0998E00786810 /* Analytics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04AA38A61CE0998E00786810 /* Analytics.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +38,12 @@
 		04AA389C1CDCE7EE00786810 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		04AA389D1CDCEC3300786810 /* GridPos.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GridPos.cpp; path = LunarLockout/GridPos.cpp; sourceTree = "<group>"; };
 		04AA389E1CDCEC3300786810 /* GridPos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GridPos.h; path = LunarLockout/GridPos.h; sourceTree = "<group>"; };
+		04AA38A01CE088DE00786810 /* IdCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IdCache.cpp; sourceTree = "<group>"; };
+		04AA38A11CE088DE00786810 /* IdCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdCache.h; sourceTree = "<group>"; };
+		04AA38A31CE0925500786810 /* GridFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GridFactory.cpp; sourceTree = "<group>"; };
+		04AA38A41CE0925500786810 /* GridFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridFactory.h; sourceTree = "<group>"; };
+		04AA38A61CE0998E00786810 /* Analytics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Analytics.cpp; path = LunarLockout/Analytics.cpp; sourceTree = "<group>"; };
+		04AA38A71CE0998E00786810 /* Analytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Analytics.h; path = LunarLockout/Analytics.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,10 +60,16 @@
 		04AA38831CDCE0A700786810 = {
 			isa = PBXGroup;
 			children = (
+				04AA38A01CE088DE00786810 /* IdCache.cpp */,
+				04AA38A11CE088DE00786810 /* IdCache.h */,
 				04AA38961CDCE7A300786810 /* Grid.cpp */,
 				04AA38971CDCE7A300786810 /* Grid.h */,
+				04AA38A31CE0925500786810 /* GridFactory.cpp */,
+				04AA38A41CE0925500786810 /* GridFactory.h */,
 				04AA38991CDCE7E700786810 /* Piece.cpp */,
 				04AA389A1CDCE7E700786810 /* Piece.h */,
+				04AA38A61CE0998E00786810 /* Analytics.cpp */,
+				04AA38A71CE0998E00786810 /* Analytics.h */,
 				04AA389C1CDCE7EE00786810 /* Common.h */,
 				04AA389D1CDCEC3300786810 /* GridPos.cpp */,
 				04AA389E1CDCEC3300786810 /* GridPos.h */,
@@ -135,8 +150,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04AA38A81CE0998E00786810 /* Analytics.cpp in Sources */,
 				04AA389F1CDCEC3300786810 /* GridPos.cpp in Sources */,
 				04AA389B1CDCE7E700786810 /* Piece.cpp in Sources */,
+				04AA38A51CE0925500786810 /* GridFactory.cpp in Sources */,
+				04AA38A21CE088DE00786810 /* IdCache.cpp in Sources */,
 				04AA38901CDCE0A700786810 /* main.cpp in Sources */,
 				04AA38981CDCE7A300786810 /* Grid.cpp in Sources */,
 			);
@@ -255,6 +273,7 @@
 				04AA38951CDCE0A700786810 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

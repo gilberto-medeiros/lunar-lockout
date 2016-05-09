@@ -9,6 +9,8 @@
 #ifndef LunarLockout_Common_h
 #define LunarLockout_Common_h
 
+#include "Analytics.h"
+
 #define GRID_X 5
 #define GRID_Y 5
 

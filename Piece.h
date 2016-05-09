@@ -16,12 +16,15 @@ class Grid;
 
 class Piece {
     bool _isSpecial;
+    int _idBase;
     
 public:
     
-    Piece(bool isSpecial);
+    Piece(bool isSpecial, int idBase);
     bool isSpecial() const;
     Grid* move(Direction dir, const Grid *inGrid);
+    
+    inline int getIdBase() { return _idBase; }
 };
 
 #endif /* defined(__LunarLockout__Piece__) */

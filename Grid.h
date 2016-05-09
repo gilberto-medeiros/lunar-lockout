@@ -26,6 +26,8 @@ class Grid {
     std::list<Piece*> _pieces;
     PieceToPositionMap _piecePositions;
     
+    void setPieceToPos(Piece* piece, const GridPos &pos);
+    
 public:
     Grid(const std::list<Piece*> &pieces);
     Grid(const Grid &copyFrom);
@@ -40,8 +42,10 @@ public:
     void swapPieceToPos(Piece* piece, const GridPos &newPos);
     
     void print() const;
-    
     bool isSolution();
+    
+    int calculateId();
+    static Grid* createGridFromId(int potencialId, const std::list<Piece*> pieces);
 };
 
 
