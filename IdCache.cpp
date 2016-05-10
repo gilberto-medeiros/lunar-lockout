@@ -19,3 +19,7 @@ bool IdCache::reserveId(int id) {
         return true;
     }
 }
+
+void IdCache::clear() {
+    _ids.clear();
+}

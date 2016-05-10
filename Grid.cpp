@@ -146,33 +146,37 @@ int Grid::calculateId() {
 Grid* Grid::createGridFromId(int potencialId, const std::list<Piece*> pieces) {
     Grid *grid = new Grid(pieces);
     
-    int id = potencialId;
-    for (auto piece : pieces) {
-        int localId = id % (GRID_X*GRID_Y);
-        GridPos localPos(localId / GRID_X, localId%GRID_Y);
-
-        if (grid->pieceInPos(localPos) != NULL) {
-            Analytics::reportEvent("grid index invalid");
-            delete grid;
-            return NULL;
+    bool fakeResult = false;
+    if (!fakeResult) {
+        int id = potencialId;
+        for (auto piece : pieces) {
+            int localId = id % (GRID_X*GRID_Y);
+            GridPos localPos(localId / GRID_X, localId%GRID_Y);
+            
+            if (grid->pieceInPos(localPos) != NULL) {
+                Analytics::reportEvent("grid index invalid");
+                delete grid;
+                return NULL;
+            }
+            grid->setPieceToPos(piece, localPos);
+            id = id / (GRID_X*GRID_Y);
         }
-        grid->setPieceToPos(piece, localPos);
-        id = id / (GRID_X*GRID_Y);
+    }
+    else {
+        GridPos fixedPositions[6];
+        fixedPositions[0].set(4,2);
+        fixedPositions[1].set(0,4);
+        fixedPositions[2].set(0,3);
+        fixedPositions[3].set(0,2);
+        fixedPositions[4].set(0,1);
+        fixedPositions[5].set(0,0);
+        
+        int i=0;
+        for (auto piece : pieces) {
+            grid->setPieceToPos(piece, fixedPositions[i++]);
+        }
     }
     
-    /*GridPos fixedPositions[6];
-    fixedPositions[0].set(4,2);
-    fixedPositions[1].set(0,4);
-    fixedPositions[2].set(0,3);
-    fixedPositions[3].set(0,2);
-    fixedPositions[4].set(0,1);
-    fixedPositions[5].set(0,0);
-    
-    int i=0;
-    for (auto piece : pieces) {
-        grid->setPieceToPos(piece, fixedPositions[i++]);
-    }
-    */
     return grid;
 }
 

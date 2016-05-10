@@ -52,6 +52,7 @@ public:
     static Grid* createGridFromId(int potencialId, const std::list<Piece*> pieces);
     
     void addMove(Direction move, Piece *piece);
+    inline int getMoveCount() { return (int)_moves.size(); }
     std::string buildMoveString() const;
 };
 

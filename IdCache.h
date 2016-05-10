@@ -18,6 +18,7 @@ private:
     static std::set<int> _ids;
 public:
     static bool reserveId(int id);
+    static void clear();
 };
 
 #endif /* defined(__LunarLockout__IdCache__) */

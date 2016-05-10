@@ -11,6 +11,7 @@
 #include "Grid.h"
 #include "Piece.h"
 #include "GridFactory.h"
+#include "IdCache.h"
 
 
 void printLine(const std::string &line) {
@@ -34,18 +35,90 @@ bool validateArguments(int argc, const char * argv[], int &numberOfBots, int &nu
 std::list<Grid*> computeAllMoves(std::list<Grid*> startGrids) {
     std::list<Grid*> endMoves;
     for (auto grid : startGrids) {
-        printLine("");
+        /*printLine("");
         printLine("startGrid");
-        grid->print();
+        grid->printMoves();
+        grid->print();*/
         std::list<Grid*> tmpMoves = grid->computeAllMoves();
-        for (auto ogrid : tmpMoves) {
+        /*for (auto ogrid : tmpMoves) {
             ogrid->printMoves();
             ogrid->print();
-        }
+        }*/
         endMoves.splice(endMoves.end(), tmpMoves);
     }
     
     return endMoves;
+}
+
+std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
+    std::list<Grid*> ret;
+    
+    Grid *g = new Grid(*igrid);
+    std::list<Grid*> startGrids;
+    startGrids.push_back(g);
+    
+    printLine("findMinimalSolution");
+    g->print();
+    
+    int moveCount = 1;
+    bool currentGridSolutionFound = false;
+    while (!currentGridSolutionFound) {
+        std::list<Grid*> moves = computeAllMoves(startGrids);
+        
+        auto it = moves.begin();
+        while (it != moves.end()) {
+            Grid *grid = *it;
+            std::string sol = grid->buildMoveString();
+            if (sol == "3R 2D 3L 0L ") {
+                int i=0;
+            }
+            
+            if (grid->isSolution()) {
+                ret.push_back(grid);
+                currentGridSolutionFound = true;
+                // move element to end list
+                it = moves.erase(it);
+            }
+            else {
+                it++;
+            }
+        }
+        
+        for (auto grid : startGrids) {
+            delete grid;
+        }
+        
+        if (moves.size() == 0) {
+            printLine("Search ended with no solutions");
+            Analytics::reportEvent("Search ended with no solutions");
+            break;
+        }
+        
+        if ((ret.size() > 0)) {
+            for (auto grid : moves) {
+                delete grid;
+            }
+            
+            printLine("returning " + std::to_string(ret.size()) + " solutions with " + std::to_string(moveCount) + " moves");
+            Analytics::reportEvent("Solutions found");
+            break;
+        }
+        
+        //startGrids.splice(startGrids.end(), moves); - crashes?
+        startGrids = moves;
+        moveCount++;
+        
+        if ((moveCount >= abortDepth)) {
+            for (auto grid : startGrids) {
+                delete grid;
+            }
+            printLine("Search aborted due to depth");
+            Analytics::reportEvent("Search aborted due to depth");
+            break;
+        }
+    }
+    
+    return ret;
 }
 
 void findGridWithMinimalSolution(int numberOfBots, int numberOfMoves) {
@@ -56,82 +129,48 @@ void findGridWithMinimalSolution(int numberOfBots, int numberOfMoves) {
     
     GridFactory::initialiseWithNumberOfPieces(numberOfBots);
     
-    bool solutionFound = false;
-    bool currentGridSolutionFound = false;
+    bool gridFound = false;
     do {
+        IdCache::clear(); // cache has to be cleared because moves with solutions can be discarded
         Grid *g = GridFactory::createGrid(pieces);
         if (g == NULL) {
             printLine("No solution for bots: " + std::to_string(numberOfBots) + " moves: " + std::to_string(numberOfMoves));
             break;
         }
-        if (g->isSolution()) {
+        if (!IdCache::reserveId(g->calculateId()) || g->isSolution()) {
             delete g;
             continue;
         }
-        Grid initialGridBackup(*g);
-        //g->print();
-        std::list<Grid*> startGrids;
-        startGrids.push_back(g);
+        Analytics::reportEvent("Starting Grid Randomized");
         
-        int moveCount = 0;
-        currentGridSolutionFound = false;
-        while (!currentGridSolutionFound) {
-            std::list<Grid*> moves = computeAllMoves(startGrids);
-            
-            for (auto grid: moves) {
-                std::string sol = grid->buildMoveString();
-                if (sol == "3R 2D 3L 0L") {
-                    int i=0;
+        std::list<Grid*> solutions = findMinimalSolutions(g, numberOfMoves+1);
+        
+        bool isFirst = true;
+        for (Grid* solution : solutions) {
+            if (isFirst) {
+                printLine("");
+                g->print();
+                if (solution->getMoveCount() == numberOfMoves) {
+                    Analytics::reportEvent("Solutions with correct size");
+                    printLine("FOUND " + std::to_string(solutions.size()) + " SOLUTIONs with " + std::to_string(numberOfMoves) + " moves");
+                    gridFound = true;
                 }
-                
-                if (grid->isSolution()) {
-                    solutionFound = (moveCount+1) == numberOfMoves;
-                    currentGridSolutionFound = true;
-                    
-                    if ((moveCount+1) == numberOfMoves) {
-                        printLine("");
-                        initialGridBackup.print();
-                        printLine("FOUND SOLUTION with " + std::to_string(moveCount+1) + " moves");
-                        grid->printMoves();
-                        grid->print();
-                    }
-                    else {
-                        Analytics::reportEvent("solution too short");
-                        printLine("Solution with " + std::to_string(moveCount) + " moves");
-                        grid->printMoves();
-                        grid->print();
-                    }
+                else {
+                    Analytics::reportEvent("solution too short");
+                    printLine("short Solutions with " + std::to_string(solution->getMoveCount()) + " moves");
                 }
+                isFirst = false;
             }
-            
-            for (auto grid : startGrids) {
-                delete grid;
-            }
-            
-            startGrids = moves;
-            moveCount++;
-            
-            if (moves.size() == 0) {
-                for (auto grid : moves) {
-                    delete grid;
-                }
-                Analytics::reportEvent("no more moves");
-                //printLine("no more moves");
-                break;
-            }
-            
-            if (!solutionFound && moveCount >= numberOfMoves) {
-                for (auto grid : startGrids) {
-                    delete grid;
-                }
-                Analytics::reportEvent("stopping due to depth too high");
-                //printLine("stopping due to depth");
-                break;
-            }
+            printLine("");
+            g->print();
+            solution->printMoves();
+            solution->print();
         }
-        Analytics::reportEvent("starting grids");
-        //printLine("startGrids = " + std::to_string(startGridCount));
-    } while (!solutionFound && !currentGridSolutionFound);
+        
+        for (auto grid : solutions) {
+            delete grid;
+        }
+    } while (!gridFound);
     
     for (auto piece : pieces) {
         delete piece;
