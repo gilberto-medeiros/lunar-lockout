@@ -12,34 +12,7 @@
 #include <math.h>
 
 GridFactory *GridFactory::_instance = NULL;
-/*
-void GridFactory::initialiseWithNumberOfPieces(int numberOfPieces) {
-    std::list<int> allValues;
 
-    int totalGrids = pow(GRID_X*GRID_Y, numberOfPieces);
-    for (int i=0; i < totalGrids; i++) {
-        allValues.emplace_back(i);
-    }
-    
-    if (_instance == NULL) {
-        _instance = new GridFactory();
-    }
-    _instance->_freeIds = allValues;
-}
-
-Grid *GridFactory::createGrid(const std::list<Piece*> pieces) {
-    if ((!_instance) || (_instance->_freeIds.size() == 0)) {
-        return NULL;
-    }
-    
-    Grid *toRet = NULL;
-    do {
-        toRet = Grid::createGridFromId(_instance->_freeIds.back(), pieces);
-        _instance->_freeIds.pop_back();
-    } while((toRet == NULL) && (_instance->_freeIds.size() != 0));
-    
-    return toRet;
-}*/
 
 void GridFactory::initialiseWithNumberOfPieces(int numberOfPieces) {
     if (_instance == NULL) {

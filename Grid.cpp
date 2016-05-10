@@ -9,6 +9,7 @@
 #include "Grid.h"
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <math.h>
 #include "IdCache.h"
 
@@ -62,7 +63,7 @@ Grid::Grid(const std::list<Piece*> &pieces) : _pieces(pieces){
      */
 }
 
-Grid::Grid(const Grid &copyFrom) : _pieces(copyFrom._pieces), _piecePositions(copyFrom._piecePositions) {
+Grid::Grid(const Grid &copyFrom) : _pieces(copyFrom._pieces), _piecePositions(copyFrom._piecePositions), _moves(copyFrom._moves) {
     memcpy(_grid, copyFrom._grid, sizeof(GridDataType));
 }
 
@@ -112,13 +113,21 @@ void Grid::print() const {
             pos.x = x;
             Piece *p = pieceInPos(pos);
             std::string code = "+";
+            if (pos.x == 2 && pos.y == 2) {
+                code = "x";
+            }
             if (p != NULL) {
-                code = p->isSpecial() ? "S" : "O";
+                //code = p->isSpecial() ? "S" : "O";
+                code = std::to_string(p->getIdBase());
             }
             std::cout << code;
         }
         std::cout << std::endl;
     }
+}
+
+void Grid::printMoves() const {
+    std::cout << buildMoveString() << std::endl;
 }
 
 bool Grid::isSolution() {
@@ -141,9 +150,7 @@ Grid* Grid::createGridFromId(int potencialId, const std::list<Piece*> pieces) {
     for (auto piece : pieces) {
         int localId = id % (GRID_X*GRID_Y);
         GridPos localPos(localId / GRID_X, localId%GRID_Y);
-        //if (localPos.x < 0 || localPos.y < 0 || localPos.x >= GRID_X || localPos.y >= GRID_Y) {
-            
-        //}
+
         if (grid->pieceInPos(localPos) != NULL) {
             Analytics::reportEvent("grid index invalid");
             delete grid;
@@ -153,5 +160,31 @@ Grid* Grid::createGridFromId(int potencialId, const std::list<Piece*> pieces) {
         id = id / (GRID_X*GRID_Y);
     }
     
+    /*GridPos fixedPositions[6];
+    fixedPositions[0].set(4,2);
+    fixedPositions[1].set(0,4);
+    fixedPositions[2].set(0,3);
+    fixedPositions[3].set(0,2);
+    fixedPositions[4].set(0,1);
+    fixedPositions[5].set(0,0);
+    
+    int i=0;
+    for (auto piece : pieces) {
+        grid->setPieceToPos(piece, fixedPositions[i++]);
+    }
+    */
     return grid;
+}
+
+void Grid::addMove(Direction move, Piece *piece) {
+    MoveElement el(piece->getIdBase(), move);
+    _moves.push_back(el);
+}
+
+std::string Grid::buildMoveString() const {
+    std::stringstream stream;
+    for (auto move : _moves) {
+        stream << std::to_string(move.first) << directionString(move.second) << " ";
+    }
+    return stream.str();
 }

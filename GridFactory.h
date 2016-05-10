@@ -17,7 +17,6 @@ class Piece;
 
 class GridFactory {
 private:
-    std::list<int> _freeIds;
     int _nextFreeId;
     int _totalGrids;
     

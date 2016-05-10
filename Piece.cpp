@@ -46,6 +46,7 @@ Grid* Piece::move(Direction dir, const Grid* inGrid) {
             
             if (IdCache::reserveId(newGrid->calculateId())) {
                 Analytics::reportEvent("Grid pushed");
+                newGrid->addMove(dir, this);
                 return newGrid;
             }
             else {

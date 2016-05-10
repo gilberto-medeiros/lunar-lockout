@@ -20,11 +20,14 @@ class Piece;
 
 typedef Piece *GridDataType[GRID_X][GRID_Y];
 typedef std::map<Piece*, GridPos> PieceToPositionMap;
+typedef std::pair<int,Direction> MoveElement;
+typedef std::list<MoveElement> MoveList;
 
 class Grid {
     GridDataType _grid;
     std::list<Piece*> _pieces;
     PieceToPositionMap _piecePositions;
+    MoveList _moves;
     
     void setPieceToPos(Piece* piece, const GridPos &pos);
     
@@ -42,10 +45,14 @@ public:
     void swapPieceToPos(Piece* piece, const GridPos &newPos);
     
     void print() const;
+    void printMoves() const;
     bool isSolution();
     
     int calculateId();
     static Grid* createGridFromId(int potencialId, const std::list<Piece*> pieces);
+    
+    void addMove(Direction move, Piece *piece);
+    std::string buildMoveString() const;
 };
 
 

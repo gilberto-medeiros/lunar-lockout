@@ -22,6 +22,21 @@ enum  Direction {
     COUNT =4
 };
 
+inline std::string directionString(Direction dir) {
+    switch (dir) {
+        case UP:
+            return "U";
+        case DOWN:
+            return "D";
+        case LEFT:
+            return "L";
+        case RIGHT:
+            return "R";
+        case COUNT:
+            return "COUNT";
+    }
+}
+
 
 
 
