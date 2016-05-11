@@ -57,8 +57,8 @@ std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
     std::list<Grid*> startGrids;
     startGrids.push_back(g);
     
-    printLine("findMinimalSolution");
-    g->print();
+    //printLine("findMinimalSolution");
+    //g->print();
     
     int moveCount = 1;
     bool currentGridSolutionFound = false;
@@ -68,10 +68,10 @@ std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
         auto it = moves.begin();
         while (it != moves.end()) {
             Grid *grid = *it;
-            std::string sol = grid->buildMoveString();
+            /*std::string sol = grid->buildMoveString();
             if (sol == "3R 2D 3L 0L ") {
                 int i=0;
-            }
+            }*/
             
             if (grid->isSolution()) {
                 ret.push_back(grid);
@@ -89,7 +89,7 @@ std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
         }
         
         if (moves.size() == 0) {
-            printLine("Search ended with no solutions");
+            //printLine("Search ended with no solutions");
             Analytics::reportEvent("Search ended with no solutions");
             break;
         }
@@ -99,7 +99,7 @@ std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
                 delete grid;
             }
             
-            printLine("returning " + std::to_string(ret.size()) + " solutions with " + std::to_string(moveCount) + " moves");
+            //printLine("returning " + std::to_string(ret.size()) + " solutions with " + std::to_string(moveCount) + " moves");
             Analytics::reportEvent("Solutions found");
             break;
         }
@@ -112,7 +112,7 @@ std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
             for (auto grid : startGrids) {
                 delete grid;
             }
-            printLine("Search aborted due to depth");
+            //printLine("Search aborted due to depth");
             Analytics::reportEvent("Search aborted due to depth");
             break;
         }
@@ -148,23 +148,23 @@ void findGridWithMinimalSolution(int numberOfBots, int numberOfMoves) {
         bool isFirst = true;
         for (Grid* solution : solutions) {
             if (isFirst) {
-                printLine("");
-                g->print();
+                //printLine("");
+                //g->print();
                 if (solution->getMoveCount() == numberOfMoves) {
                     Analytics::reportEvent("Solutions with correct size");
-                    printLine("FOUND " + std::to_string(solutions.size()) + " SOLUTIONs with " + std::to_string(numberOfMoves) + " moves");
+                    //printLine("FOUND " + std::to_string(solutions.size()) + " SOLUTIONs with " + std::to_string(numberOfMoves) + " moves");
                     gridFound = true;
                 }
                 else {
                     Analytics::reportEvent("solution too short");
-                    printLine("short Solutions with " + std::to_string(solution->getMoveCount()) + " moves");
+                    //printLine("short Solutions with " + std::to_string(solution->getMoveCount()) + " moves");
                 }
                 isFirst = false;
             }
-            printLine("");
+            /*printLine("");
             g->print();
             solution->printMoves();
-            solution->print();
+            solution->print();*/
         }
         
         for (auto grid : solutions) {
@@ -182,15 +182,15 @@ int main(int argc, const char * argv[]) {
     int numberOfBots, numberOfMoves;
     if (validateArguments(argc, argv, numberOfBots, numberOfMoves)) {
         
-        findGridWithMinimalSolution(6, 5); Analytics::dashboard();
+        //findGridWithMinimalSolution(6, 5); Analytics::dashboard();
         
-        /*for (int pieces = 2; pieces < 7; pieces++) {
-            for (int moves=2; moves < 10; moves++) {
+        for (int pieces = 2; pieces < 7; pieces++) {
+            for (int moves=2; moves < 7; moves++) {
                 printLine("");
                 printLine("attempt " + std::to_string(pieces) + " moves: " + std::to_string(moves));
                 findGridWithMinimalSolution(pieces, moves);
             }
-        }Analytics::dashboard();*/
+        }Analytics::dashboard();
         
         
         

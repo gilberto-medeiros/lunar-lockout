@@ -154,7 +154,7 @@ Grid* Grid::createGridFromId(int potencialId, const std::list<Piece*> pieces) {
             GridPos localPos(localId / GRID_X, localId%GRID_Y);
             
             if (grid->pieceInPos(localPos) != NULL) {
-                Analytics::reportEvent("grid index invalid");
+                Analytics::reportEvent("Invalid id for grid creation");
                 delete grid;
                 return NULL;
             }
