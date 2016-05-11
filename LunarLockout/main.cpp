@@ -51,6 +51,7 @@ std::list<Grid*> computeAllMoves(std::list<Grid*> startGrids) {
 }
 
 std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
+    Analytics::startTimer("findMinimalSolutions");
     std::list<Grid*> ret;
     
     Grid *g = new Grid(*igrid);
@@ -118,10 +119,12 @@ std::list<Grid*> findMinimalSolutions(Grid *igrid, int abortDepth) {
         }
     }
     
+    Analytics::endTimer("findMinimalSolutions");
     return ret;
 }
 
 void findGridWithMinimalSolution(int numberOfBots, int numberOfMoves) {
+    Analytics::startTimer("findGridWithMinimalSolution");
     std::list<Piece*> pieces;
     for (int i= 0; i < numberOfBots; i++) {
         pieces.push_back(new Piece(i==0, i));
@@ -175,6 +178,8 @@ void findGridWithMinimalSolution(int numberOfBots, int numberOfMoves) {
     for (auto piece : pieces) {
         delete piece;
     }
+    
+    Analytics::endTimer("findGridWithMinimalSolution");
 }
 
 

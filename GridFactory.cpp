@@ -27,10 +27,12 @@ Grid *GridFactory::createGrid(const std::list<Piece*> pieces) {
         return NULL;
     }
     
+    Analytics::startTimer("create valid grid");
     Grid *toRet = NULL;
     do {
         toRet = Grid::createGridFromId(_instance->_nextFreeId++, pieces);
     } while((toRet == NULL) && (_instance->_nextFreeId < (_instance->_totalGrids-1)));
     
+    Analytics::endTimer("create valid grid");
     return toRet;
 }
