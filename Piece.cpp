@@ -22,13 +22,14 @@ bool Piece::isSpecial() const {
 }
 
 bool moveInDirection(GridPos &pos, const GridPos &direction) {
-    pos = pos + direction;
+    pos += direction;
     Analytics::reportEvent("move Calculation");
     
-    return pos.x >=0 && pos.x < GRID_X && pos.y >=0 && pos.y < GRID_X;
+    return pos.x >=0 && pos.x < GRID_X && pos.y >=0 && pos.y < GRID_Y;
 }
 
 Grid* Piece::move(Direction dir, const Grid* inGrid) {
+    Analytics::startTimer("piece move");
     const GridPos& directionVec = directionToVec(dir);
     GridPos piecePos = inGrid->positionOfPiece(this);
     GridPos oldPos(piecePos);
@@ -38,6 +39,7 @@ Grid* Piece::move(Direction dir, const Grid* inGrid) {
         Piece *adjacent = inGrid->pieceInPos(piecePos);
         if (adjacent) {
             if (!movePossible) {
+                Analytics::endTimer("piece move");
                 return NULL;
             }
             
@@ -47,12 +49,14 @@ Grid* Piece::move(Direction dir, const Grid* inGrid) {
             if (IdCache::reserveId(newGrid->calculateId())) {
                 Analytics::reportEvent("Grid pushed");
                 newGrid->addMove(dir, this);
+                Analytics::endTimer("piece move");
                 return newGrid;
             }
             else {
                 Analytics::reportEvent("Grid dropped (cached)");
                 // this grid was already explored in the past
                 delete newGrid;
+                Analytics::endTimer("piece move");
                 return NULL;
             }
         }
@@ -61,5 +65,6 @@ Grid* Piece::move(Direction dir, const Grid* inGrid) {
         movePossible = true;
     }
     
+    Analytics::endTimer("piece move");
     return NULL;
 }
